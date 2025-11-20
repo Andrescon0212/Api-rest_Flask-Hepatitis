@@ -5,11 +5,11 @@ import json
 
 app = Flask(__name__)
 
-# Cargar el modelo y el scaler al iniciar la app
-modelo = joblib.load('modelo_regresion_logistica.pkl')
-scaler = joblib.load('scaler.pkl')
+# Cargar modelo desde la carpeta models/
+modelo = joblib.load('models/modelo_regresion_logistica.pkl')
+scaler = joblib.load('models/scaler.pkl')
 
-# Cargar la información del modelo
+# El JSON quedó en la raíz según tu estructura
 with open('modelo_regresion_logistica_info.json', 'r') as f:
     info_modelo = json.load(f)
 
@@ -31,16 +31,10 @@ def info():
 @app.route('/predecir', methods=['POST'])
 def predecir():
     try:
-        # Recibir los datos del request
         datos = request.get_json()
-        
-        # Convertir a array numpy
         caracteristicas = np.array([datos['caracteristicas']])
-        
-        # Escalar los datos
         caracteristicas_scaled = scaler.transform(caracteristicas)
         
-        # Hacer la predicción
         prediccion = modelo.predict(caracteristicas_scaled)
         probabilidad = modelo.predict_proba(caracteristicas_scaled)
         
